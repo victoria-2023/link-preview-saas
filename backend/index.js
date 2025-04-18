@@ -1,12 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const ogs = require('open-graph-scraper');
+require('dotenv').config();
 
 const app = express();
 
+// Allow only Netlify frontend domain
 app.use(cors({
-  origin: '*', // You can replace * with your frontend domain in production
+  origin: 'https://luminous-fenglisu-c8e58b.netlify.app',
 }));
+
 app.use(express.json());
 
 app.post('/api/preview', async (req, res) => {
@@ -20,7 +23,7 @@ app.post('/api/preview', async (req, res) => {
     const { error, result, response } = await ogs({ url });
 
     if (error || !result.success) {
-      console.error('🔴 Open Graph Error:', result?.error || response?.statusCode);
+      console.error('🔴 Open Graph Error:', result?.error || response?.statusCode || 'Unknown error');
       return res.status(500).json({ error: 'Failed to fetch preview data' });
     }
 
@@ -39,9 +42,7 @@ app.post('/api/preview', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT;
-
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`🚀 Backend running on http://localhost:${PORT}`);
 });
-
