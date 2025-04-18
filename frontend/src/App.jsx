@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import { useState } from 'react';
 import './App.css';
 
@@ -9,22 +8,22 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // ✅ Use env var or fallback to localhost
+  // ✅ Use environment variable or fallback to localhost (for local testing)
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   const fetchPreview = async () => {
-    if (!url) return;
+    if (!url.trim()) return;
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/preview`, {
+      const response = await fetch(`${BACKEND_URL}/api/preview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
       if (data.error) {
         setError(data.error);
@@ -34,8 +33,8 @@ function App() {
         setHistory((prev) => [data, ...prev]);
       }
     } catch (err) {
-      console.error(err);
-      setError('Something went wrong');
+      console.error('🔴 Fetch Error:', err);
+      setError('Something went wrong while fetching the preview.');
       setPreview(null);
     } finally {
       setLoading(false);
@@ -45,6 +44,7 @@ function App() {
   return (
     <div className="app-container">
       <h1>🔗 Link Preview Generator</h1>
+
       <input
         type="text"
         placeholder="Paste your link here..."
@@ -52,11 +52,9 @@ function App() {
         onChange={(e) => setUrl(e.target.value)}
       />
 
-      {loading ? (
-        <p style={{ marginTop: '1rem' }}>⏳ Generating preview...</p>
-      ) : (
-        <button onClick={fetchPreview}>Generate Preview</button>
-      )}
+      <button onClick={fetchPreview} disabled={loading}>
+        {loading ? '⏳ Generating...' : 'Generate Preview'}
+      </button>
 
       {error && <p className="error">{error}</p>}
 
@@ -66,10 +64,7 @@ function App() {
           <h2>{preview.title}</h2>
           <p>{preview.description}</p>
           <span>{preview.site}</span>
-          <button
-            style={{ marginTop: '10px' }}
-            onClick={() => navigator.clipboard.writeText(preview.url)}
-          >
+          <button onClick={() => navigator.clipboard.writeText(preview.url)}>
             Copy Link
           </button>
         </div>
