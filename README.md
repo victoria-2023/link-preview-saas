@@ -6,6 +6,10 @@ This is a simple yet powerful SaaS application that generates **Open Graph previ
 
 👉 [https://luminous-fenglisu-c8e58b.netlify.app](https://luminous-fenglisu-c8e58b.netlify.app)
 
+
+<img width="285" alt="link-preview-generator" src="https://github.com/user-attachments/assets/cb781ef4-3d84-4ac9-8a48-d4682227a64b" />
+
+
 ---
 
 ## ✨ Features
