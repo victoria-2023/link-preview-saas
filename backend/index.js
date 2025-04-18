@@ -5,9 +5,20 @@ require('dotenv').config();
 
 const app = express();
 
-// Allow only Netlify frontend domain
+// ✅ Set CORS dynamically based on environment
+const allowedOrigins = [
+  'https://luminous-fenglisu-c8e58b.netlify.app', // Production frontend
+  'http://localhost:5173',                        // Local frontend dev
+];
+
 app.use(cors({
-  origin: 'https://luminous-fenglisu-c8e58b.netlify.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
 app.use(express.json());
@@ -20,7 +31,12 @@ app.post('/api/preview', async (req, res) => {
   }
 
   try {
-    const { error, result, response } = await ogs({ url });
+    const { error, result, response } = await ogs({
+      url,
+      headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', // ✅ Helps bypass anti-bot
+      },
+    });
 
     if (error || !result.success) {
       console.error('🔴 Open Graph Error:', result?.error || response?.statusCode || 'Unknown error');
